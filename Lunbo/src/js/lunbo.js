@@ -1,4 +1,7 @@
-import Event from './Event.js'
+import 'babel-polyfill'
+
+// import Event from './Event.js'
+const Event = require('./Event.js')
 
 var addEvent = Event.addEvent
 

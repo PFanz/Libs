@@ -1,5 +1,4 @@
 export const Event = {
-
   addEvent: (domElem, event, func) => {
     if (document.addEventListener) {
       return domElem.addEventListener(event, func)
