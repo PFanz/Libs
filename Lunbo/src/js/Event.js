@@ -1,4 +1,4 @@
-export const Event = {
+const Event = {
   addEvent: (domElem, event, func) => {
     if (document.addEventListener) {
       return domElem.addEventListener(event, func)
@@ -9,4 +9,4 @@ export const Event = {
   }
 }
 
-export default Event
+module.exports = Event

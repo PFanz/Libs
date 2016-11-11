@@ -1,8 +1,0 @@
-{
-  "globals": {
-    // "$": true
-  },
-  "extends": [
-    "standard"
-  ]
-}

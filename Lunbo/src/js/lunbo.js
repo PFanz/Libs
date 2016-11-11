@@ -1,6 +1,3 @@
-import 'babel-polyfill'
-
-// import Event from './Event.js'
 const Event = require('./Event.js')
 
 var addEvent = Event.addEvent
@@ -8,12 +5,12 @@ var addEvent = Event.addEvent
 var Lunbo = function (config) {
   // 默认配置
   let defaultConfig = {
-    play: true,
-    pause: true,
+    auto: true,
     step: 1,
     delay: 3,
     hasDot: true,
-    hasArrow: true
+    hasArrow: true,
+    touch: true
   }
   // 合并配置
   config = {
@@ -23,12 +20,12 @@ var Lunbo = function (config) {
 
   // 用到的配置项
   this.contentElem = document.getElementById(config.id)
-  this.play = config.play
-  this.pause = config.pause
+  this.auto = config.auto
   this.step = config.step
   this.delay = config.delay
   this.hasDot = config.hasDot
   this.hasArrow = config.hasArrow
+  this.touch = config.touch
 
   // 一些使用到的变量
   // DOM相关
@@ -71,7 +68,7 @@ Lunbo.prototype.createDots = function (parentElem) {
           break
         }
       }
-      this.turn(targetIndex - this._n)
+      this.play(targetIndex - this._n)
     }
   })
 }
@@ -87,70 +84,11 @@ Lunbo.prototype.createArrows = function (parentElem) {
   addEvent(this.arrowContainer, 'click', (event) => {
     let target = event.target || event.srcElement
     if (target.className.indexOf('focus-arrow-pre') !== -1) {
-      this.turn(-1)
+      this.play(-1)
     } else if (target.className.indexOf('focus-arrow-next') !== -1) {
-      this.turn(1)
+      this.play(1)
     }
   })
-}
-
-// 重写
-Lunbo.prototype.turn = function (n) {
-  // 目的地
-  let pos = this._n + n
-  if (pos < 0) {
-    pos = pos + this.len
-  } else if (pos >= this.len) {
-    pos = pos - this.len
-  }
-  // 如果正在滚动，停止滚动，并重新开始
-  if (this.movingFlag !== null) {
-    clearInterval(this.movingFlag)
-    this.movingFlag = null
-  }
-
-  // 滚动到该目的地
-  // 坐标轴 左为正，又为负
-  let nextLeft = -pos * this.imgWidth
-  let currLeft = parseFloat(this.listContainer.style.left)
-  // 每次移动距离
-  let move = (nextLeft - currLeft) / (this.step * 1000) * 13
-
-  // 滚动动画，13ms一次
-  this.movingFlag = setInterval(() => {
-    // 每次要移动到的位置
-    let targetLeft = parseFloat(this.listContainer.style.left) + move
-
-    // 向前移动
-    if (move < 0) {
-      // 移动到的位置在目标位置的右边
-      if (targetLeft <= nextLeft) {
-        targetLeft = nextLeft
-        clearInterval(this.movingFlag)
-        this.movingFlag = null
-      }
-    } else if (move > 0) {
-      // 移动到的位置再目标位置的左边
-      if (targetLeft >= nextLeft) {
-        targetLeft = nextLeft
-        clearInterval(this.movingFlag)
-        this.movingFlag = null
-      }
-    }
-
-    this.listContainer.style.left = targetLeft + 'px'
-  }, 13)
-
-  this._n = pos
-
-  // 修改dot active
-  if (this.hasDot) {
-    this.dotNodes = this.dotContainer.querySelectorAll('.dot')
-    for (let i = 0; i < this.len; i++) {
-      this.dotNodes[i].className = 'dot'
-    }
-    this.dotNodes[this._n].className = 'dot active'
-  }
 }
 
 Lunbo.prototype.setStyle = function () {
@@ -178,10 +116,68 @@ Lunbo.prototype.autoPlay = function () {
   if (this.playingFlag === null) {
     this.playingFlag = setInterval(
       () => {
-        this.turn(1)
+        this.play(1)
       }, this.delay * 1000)
   }
   return this.playingFlag
+}
+
+Lunbo.prototype.play = function (n) {
+  // 目的地
+  let pos = this._n + n
+  if (pos < 0) {
+    pos = pos + this.len
+  } else if (pos >= this.len) {
+    pos = pos - this.len
+  }
+  // 如果正在滚动，停止滚动，并重新开始
+  if (this.movingFlag !== null) {
+    clearInterval(this.movingFlag)
+    this.movingFlag = null
+  }
+
+  // 滚动到该目的地
+  // 坐标轴 左为正，又为负
+  let nextLeft = -pos * this.imgWidth
+  let currLeft = parseFloat(this.listContainer.style.left)
+  // 每次移动距离
+  let move = (nextLeft - currLeft) / (this.step * 1000) * 24
+
+  // 滚动动画
+  this.movingFlag = setInterval(() => {
+    // 每次要移动到的位置
+    let targetLeft = parseFloat(this.listContainer.style.left) + move
+
+    // 向前移动
+    if (move < 0) {
+      // 移动到的位置在目标位置的右边
+      if (targetLeft <= nextLeft) {
+        targetLeft = nextLeft
+        clearInterval(this.movingFlag)
+        this.movingFlag = null
+      }
+    } else if (move > 0) {
+      // 移动到的位置再目标位置的左边
+      if (targetLeft >= nextLeft) {
+        targetLeft = nextLeft
+        clearInterval(this.movingFlag)
+        this.movingFlag = null
+      }
+    }
+
+    this.listContainer.style.left = targetLeft + 'px'
+  }, 8)
+
+  this._n = pos
+
+  // 修改dot active
+  if (this.hasDot) {
+    this.dotNodes = this.dotContainer.querySelectorAll('.dot')
+    for (let i = 0; i < this.len; i++) {
+      this.dotNodes[i].className = 'dot'
+    }
+    this.dotNodes[this._n].className = 'dot active'
+  }
 }
 
 Lunbo.prototype.autoPause = function (domElem) {
@@ -195,12 +191,71 @@ Lunbo.prototype.autoPause = function (domElem) {
   return this.playingFlag
 }
 
+Lunbo.prototype.pause = function () {
+  clearInterval(this.playingFlag)
+  this.playingFlag = null
+}
+
+Lunbo.prototype.swiper = function () {
+  let startX = 0
+  // swipe start
+  addEvent(this.contentElem, 'touchstart', (event) => {
+    // 暂停轮播
+    this.pause()
+    // 记录位置
+    startX = event.touches[0].clientX
+  })
+  // swiping
+  addEvent(this.contentElem, 'touchmove', (event) => {
+    event.preventDefault()
+    this.listContainer.style.transform = 'translateX(' + (event.touches[0].clientX - startX) + 'px)'
+  })
+  // swipe end
+  addEvent(this.contentElem, 'touchend', (event) => {
+    let endX = event.changedTouches[0].clientX
+    // 判断条件还需要重写
+    if (endX - startX > this.imgWidth / 4) {
+      if (this._n === 0) {
+        this.listContainer.style.transition = 'all .3s ease-in .1s'
+        this.listContainer.style.transform = 'translateX(0)'
+        setTimeout(() => {
+          this.listContainer.style.transition = 'none'
+        }, 500)
+      } else {
+        this.listContainer.style.transform = 'translateX(0)'
+        this.listContainer.style.left = (parseFloat(this.listContainer.style.left) + endX - startX) + 'px'
+        this.play(-1)
+      }
+    } else if (startX - endX > this.imgWidth / 4) {
+      if (this._n === (this.len - 1)) {
+        this.listContainer.style.transition = 'all .3s ease-in .1s'
+        this.listContainer.style.transform = 'translateX(0)'
+        setTimeout(() => {
+          this.listContainer.style.transition = 'none'
+        }, 500)
+      } else {
+        this.listContainer.style.transform = 'translateX(0)'
+        this.listContainer.style.left = (parseFloat(this.listContainer.style.left) + endX - startX) + 'px'
+        this.play(1)
+      }
+    } else {
+      this.listContainer.style.transition = 'all .3s ease-in .1s'
+      this.listContainer.style.transform = 'translateX(0)'
+      setTimeout(() => {
+        this.listContainer.style.transition = 'none'
+      }, 500)
+    }
+    // 继续自动轮播
+    this.auto && this.autoPlay()
+  })
+}
+
 Lunbo.prototype.init = function () {
   this.setStyle()
+  this.touch && this.swiper()
   this.hasDot && this.createDots(this.contentElem)
   this.hasArrow && this.createArrows(this.contentElem)
-  this.play && this.autoPlay() &&
-    this.pause && this.autoPause(this.contentElem) &&
+  this.auto && this.autoPlay() && this.autoPause(this.contentElem) &&
     this.hasDot && this.autoPause(this.dotContainer)
 }
 
