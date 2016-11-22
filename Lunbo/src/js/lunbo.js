@@ -1,8 +1,7 @@
 const Event = require('./Event.js')
+const addEvent = Event.addEvent
 
-var addEvent = Event.addEvent
-
-var Lunbo = function (config) {
+const Lunbo = function (config) {
   // 默认配置
   let defaultConfig = {
     auto: true,
@@ -30,9 +29,9 @@ var Lunbo = function (config) {
   // 一些使用到的变量
   // DOM相关
   this.listContainer = this.contentElem.querySelector('ul')
-  this.len = this.contentElem.querySelectorAll('img').length
-  this.imgWidth = this.contentElem.clientWidth
-  this.imgHeight = this.contentElem.clientHeight
+  this.len = this.contentElem.querySelectorAll('li').length
+  this.oneWidth = this.contentElem.clientWidth
+  this.oneHeight = this.contentElem.clientHeight
   this.dotContainer = null
   this.arrowContainer = null
   this.dotNodes = null
@@ -96,8 +95,7 @@ Lunbo.prototype.setStyle = function () {
   this.contentElem.style.position = 'relative'
   this.contentElem.style.overflow = 'hidden'
 
-  this.listContainer.style.padding = 0
-  this.listContainer.style.width = this.len * this.imgWidth + 'px'
+  this.listContainer.style.width = this.len * this.oneWidth + 'px'
   this.listContainer.style.position = 'absolute'
   this.listContainer.style.left = 0 + 'px'
 
@@ -105,10 +103,6 @@ Lunbo.prototype.setStyle = function () {
   for (let i = 0, len = listNodes.length; i < len; i++) {
     listNodes[i].style.listStyle = 'none'
     listNodes[i].style.float = 'left'
-    listNodes[i].style.width = this.imgWidth + 'px'
-    listNodes[i].style.height = this.imgHeight + 'px'
-    listNodes[i].querySelector('img').style.width = '100%'
-    listNodes[i].querySelector('img').style.height = '100%'
   }
 }
 
@@ -138,7 +132,7 @@ Lunbo.prototype.play = function (n) {
 
   // 滚动到该目的地
   // 坐标轴 左为正，又为负
-  let nextLeft = -pos * this.imgWidth
+  let nextLeft = -pos * this.oneWidth
   let currLeft = parseFloat(this.listContainer.style.left)
   // 每次移动距离
   let move = (nextLeft - currLeft) / (this.step * 1000) * 24
@@ -198,51 +192,67 @@ Lunbo.prototype.pause = function () {
 
 Lunbo.prototype.swiper = function () {
   let startX = 0
+  let startY = 0
   // swipe start
   addEvent(this.contentElem, 'touchstart', (event) => {
     // 暂停轮播
     this.pause()
     // 记录位置
     startX = event.touches[0].clientX
+    startY = event.touches[0].clientY
   })
   // swiping
   addEvent(this.contentElem, 'touchmove', (event) => {
     event.preventDefault()
+    if (event.touches[0].clientY > startY) {
+      return
+    }
     this.listContainer.style.transform = 'translateX(' + (event.touches[0].clientX - startX) + 'px)'
+    this.listContainer.style.webkitTransform = 'translateX(' + (event.touches[0].clientX - startX) + 'px)'
   })
   // swipe end
   addEvent(this.contentElem, 'touchend', (event) => {
     let endX = event.changedTouches[0].clientX
     // 判断条件还需要重写
-    if (endX - startX > this.imgWidth / 4) {
+    if (endX - startX > this.oneWidth / 4) {
       if (this._n === 0) {
         this.listContainer.style.transition = 'all .3s ease-in .1s'
+        this.listContainer.style.webkitTransition = 'all .3s ease-in .1s'
         this.listContainer.style.transform = 'translateX(0)'
+        this.listContainer.style.webkitTransform = 'translateX(0)'
         setTimeout(() => {
           this.listContainer.style.transition = 'none'
         }, 500)
       } else {
         this.listContainer.style.transform = 'translateX(0)'
+        this.listContainer.style.webkitTransform = 'translateX(0)'
         this.listContainer.style.left = (parseFloat(this.listContainer.style.left) + endX - startX) + 'px'
         this.play(-1)
       }
-    } else if (startX - endX > this.imgWidth / 4) {
+    } else if (startX - endX > this.oneWidth / 4) {
       if (this._n === (this.len - 1)) {
         this.listContainer.style.transition = 'all .3s ease-in .1s'
+        this.listContainer.style.webkitTransition = 'all .3s ease-in .1s'
         this.listContainer.style.transform = 'translateX(0)'
+        this.listContainer.style.webkitTransform = 'translateX(0)'
         setTimeout(() => {
           this.listContainer.style.transition = 'none'
+          this.listContainer.style.webkitTransition = 'none'
         }, 500)
       } else {
         this.listContainer.style.transform = 'translateX(0)'
+        this.listContainer.style.webkitTransform = 'translateX(0)'
         this.listContainer.style.left = (parseFloat(this.listContainer.style.left) + endX - startX) + 'px'
         this.play(1)
       }
     } else {
       this.listContainer.style.transition = 'all .3s ease-in .1s'
+      this.listContainer.style.webkitTransition = 'all .3s ease-in .1s'
       this.listContainer.style.transform = 'translateX(0)'
+      this.listContainer.style.webkitTransform = 'translateX(0)'
       setTimeout(() => {
         this.listContainer.style.transition = 'none'
+        this.listContainer.style.webkitTransition = 'none'
       }, 500)
     }
     // 继续自动轮播
@@ -259,4 +269,4 @@ Lunbo.prototype.init = function () {
     this.hasDot && this.autoPause(this.dotContainer)
 }
 
-new Lunbo({id: 'lunbo'}).init()
+module.exports = Lunbo
