@@ -1,0 +1,9 @@
+{
+  "extends": [
+    "standard"
+  ],
+  "rules": {
+    "no-unused-vars": 1,
+    "no-console": [1, { "allow": ["warn", "error"]}]
+  }
+}
