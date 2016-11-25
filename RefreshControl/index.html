@@ -3,23 +3,38 @@
 <head>
   <meta charset="UTF-8">
   <title></title>
-  <style>
-    #lunbo {
-      float: left;
-      width: 500px;
+  <style type="text/css">
+    body {
+      padding: 0;
+      margin: 0;
+    }
+    #refresh-control {
+      position: relative;
       height: 500px;
+      background: #123456;
+    }
+    .refresh-control-info {
+      position: absolute;
+      top: -1rem;
+      left: 0;
+      height: 1rem;
+      width: 100%;
+      text-align: center;
+      font-size: .5rem;
     }
   </style>
 </head>
 <body>
-  <div id="lunbo">
-    <ul>
-      <li><img src="dist/images/photo-1.png" alt=""></li>
-      <li><img src="dist/images/photo-2.png" alt=""></li>
-      <li><img src="dist/images/photo-3.png" alt=""></li>
-      <li><img src="dist/images/photo-4.png" alt=""></li>
-    </ul>
+  <div id="refresh-control">
+    <div class="refresh-control-info">
+      <!-- 这里是下拉提示信息 -->
+      下拉刷新
+    </div>
+    <div class="refresh-control-container">
+      <!-- 这里是下拉内容区 -->
+    </div>
   </div>
+
   <script type="text/javascript" src="dist/js/index.js"></script>
 </body>
 </html>
