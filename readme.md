@@ -12,15 +12,14 @@
 ```
 建议使用webpack打包使用，详细事例可以进入对应文件夹查看。
 
-### 轮播图
-[轮播图](./Lunbo/)
+### [轮播图](./Lunbo/)
 --- 依赖Event.js  
 
     new Lunbo({
       id: 'lunbo'
     }).init()
 
-### 下拉刷新
+### [下拉刷新](./RefreshControl/)
 --- 依赖Event.js  
 
     new RefreshControl({
