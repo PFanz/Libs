@@ -7,23 +7,20 @@
 
 0. 使用方法
 -----------
-按容器div > ul > (li > img)来编写HTML，按照图片宽高为内容器设置宽高。  
-<small>只需要引入`/dist/js/lunbo.js/`</small>
+html结构请包含ul>li，每个li代表一页。
 
 Eg.
 ```html
 <div id="lunbo">
   <ul>
-    <li><<img src="dist/images/photo-1.png" alt=""></li>
-    <li><<img src="dist/images/photo-2.png" alt=""></li>
-    <li><img src="dist/images/photo-3.png" alt=""></li>
-    <li><img src="dist/images/photo-4.png" alt=""></li>
-    <li><img src="dist/images/photo-5.png" alt=""></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
   </ul>
 </div>
 ```
-    ps:
-      类名用于添加自定义样式，以及设置容器宽高
 
 1. 参数
 ---------
@@ -38,10 +35,12 @@ new Lunbo({
 其他参数及默认值：
 ```javascript
 var defaultConfig = {
-      auto: true,     // 自动播放
-      delay: 3,           // 滚动延迟，单位s
-      hasDot: true,      // 是否拥有dots   样式需要自定义
-      hasArrow: true     // 是否拥有Arrow      样式需要自定义
+      auto: true,       // 自动播放
+      step: 1,          // 自动播放页数
+      delay: 3,         // 自动播放延迟时间
+      hasDot: true,     // 是否创建dot
+      hasArrow: true,   // 是否创建arrow
+      touch: true       // 是否支持滑动
     };
 ```
 
@@ -61,6 +60,7 @@ Dots:(根据图片个数自动生成)
   <a href="javascript:void(0);" class="dot"></a>
 </div>
 ```
+根据dot和arrow类名自定义样式
 
 3. 高级应用
 ---------------
