@@ -1,5 +1,4 @@
 const Event = require('./Event.js')
-const addEvent = Event.addEvent
 
 const Lunbo = function (config) {
   // 默认配置
@@ -35,6 +34,7 @@ const Lunbo = function (config) {
   this.dotContainer = null
   this.arrowContainer = null
   this.dotNodes = null
+
   // 位置相关
   this._n = 0
   this.movingFlag = null
@@ -54,7 +54,7 @@ Lunbo.prototype.createDots = function (parentElem) {
   // 为dot添加事件
   let dotNodes = this.dotContainer.querySelectorAll('.dot')
   let targetIndex = 0
-  addEvent(this.dotContainer, 'click', (event) => {
+  Event.addEvent(this.dotContainer, 'click', (event) => {
     let target = event.target || event.srcElement
     if (target.className.indexOf('dot') !== -1) {
       // 阻止点击多次
@@ -80,7 +80,7 @@ Lunbo.prototype.createArrows = function (parentElem) {
   this.arrowContainer.innerHTML = str
   parentElem.appendChild(this.arrowContainer)
   // 为arrows添加事件
-  addEvent(this.arrowContainer, 'click', (event) => {
+  Event.addEvent(this.arrowContainer, 'click', (event) => {
     let target = event.target || event.srcElement
     if (target.className.indexOf('focus-arrow-pre') !== -1) {
       this.play(-1)
@@ -95,14 +95,19 @@ Lunbo.prototype.setStyle = function () {
   this.contentElem.style.position = 'relative'
   this.contentElem.style.overflow = 'hidden'
 
+  // this.listContainer.style.padding = 0
   this.listContainer.style.width = this.len * this.oneWidth + 'px'
-  this.listContainer.style.position = 'absolute'
+  this.listContainer.style.position = 'relative'
   this.listContainer.style.left = 0 + 'px'
 
   let listNodes = this.contentElem.querySelectorAll('li')
   for (let i = 0, len = listNodes.length; i < len; i++) {
     listNodes[i].style.listStyle = 'none'
     listNodes[i].style.float = 'left'
+    listNodes[i].style.width = this.oneWidth + 'px'
+    // listNodes[i].style.height = this.oneHeight + 'px'
+    // listNodes[i].querySelector('img').style.width = '100%'
+    // listNodes[i].querySelector('img').style.height = '100%'
   }
 }
 
@@ -175,11 +180,11 @@ Lunbo.prototype.play = function (n) {
 }
 
 Lunbo.prototype.autoPause = function (domElem) {
-  addEvent(domElem, 'mouseenter', () => {
+  Event.addEvent(domElem, 'mouseenter', () => {
     clearInterval(this.playingFlag)
     this.playingFlag = null
   })
-  addEvent(domElem, 'mouseleave', () => {
+  Event.addEvent(domElem, 'mouseleave', () => {
     this.autoPlay()
   })
   return this.playingFlag
@@ -194,7 +199,7 @@ Lunbo.prototype.swiper = function () {
   let startX = 0
   let startY = 0
   // swipe start
-  addEvent(this.contentElem, 'touchstart', (event) => {
+  Event.addEvent(this.contentElem, 'touchstart', (event) => {
     // 暂停轮播
     this.pause()
     // 记录位置
@@ -202,19 +207,32 @@ Lunbo.prototype.swiper = function () {
     startY = event.touches[0].clientY
   })
   // swiping
-  addEvent(this.contentElem, 'touchmove', (event) => {
-    event.preventDefault()
-    if (event.touches[0].clientY > startY) {
-      return
+  Event.addEvent(this.contentElem, 'touchmove', (event) => {
+    let currX = event.touches[0].clientX
+    let currY = event.touches[0].clientY
+    let moved = event.touches[0].clientX - startX
+    if (Event.isMoveHorizontal(startX, startY, currX, currY)) {
+      event.preventDefault()
+      event.stopPropagation()
+      if (event.touches[0].clientY - startY > 10) {
+        return
+      }
+      if (this._n === 0 && moved > 0) {
+        moved = Math.pow(moved, 0.9)
+      }
+      if (this._n === this.len - 1 && moved < 0) {
+        moved = Math.pow(-moved, 0.9)
+        moved = -moved
+      }
+      this.listContainer.style.transform = 'translateX(' + (moved) + 'px)'
+      this.listContainer.style.webkitTransform = 'translateX(' + (moved) + 'px)'
     }
-    this.listContainer.style.transform = 'translateX(' + (event.touches[0].clientX - startX) + 'px)'
-    this.listContainer.style.webkitTransform = 'translateX(' + (event.touches[0].clientX - startX) + 'px)'
   })
   // swipe end
-  addEvent(this.contentElem, 'touchend', (event) => {
+  Event.addEvent(this.contentElem, 'touchend', (event) => {
     let endX = event.changedTouches[0].clientX
     // 判断条件还需要重写
-    if (endX - startX > this.oneWidth / 4) {
+    if (endX - startX > this.oneWidth / 5) {
       if (this._n === 0) {
         this.listContainer.style.transition = 'all .3s ease-in .1s'
         this.listContainer.style.webkitTransition = 'all .3s ease-in .1s'
