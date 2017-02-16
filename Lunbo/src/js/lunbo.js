@@ -7,8 +7,7 @@ const Lunbo = function (config) {
     step: 1,
     delay: 3,
     hasDot: true,
-    hasArrow: true,
-    touch: true
+    hasArrow: true
   }
   // 合并配置
   config = {
@@ -23,7 +22,6 @@ const Lunbo = function (config) {
   this.delay = config.delay
   this.hasDot = config.hasDot
   this.hasArrow = config.hasArrow
-  this.touch = config.touch
 
   // 一些使用到的变量
   // DOM相关
@@ -195,92 +193,8 @@ Lunbo.prototype.pause = function () {
   this.playingFlag = null
 }
 
-Lunbo.prototype.swiper = function () {
-  let startX = 0
-  let startY = 0
-  // swipe start
-  Event.addEvent(this.contentElem, 'touchstart', (event) => {
-    // 暂停轮播
-    this.pause()
-    // 记录位置
-    startX = event.touches[0].clientX
-    startY = event.touches[0].clientY
-  })
-  // swiping
-  Event.addEvent(this.contentElem, 'touchmove', (event) => {
-    let currX = event.touches[0].clientX
-    let currY = event.touches[0].clientY
-    let moved = event.touches[0].clientX - startX
-    if (Event.isMoveHorizontal(startX, startY, currX, currY)) {
-      event.preventDefault()
-      event.stopPropagation()
-      if (event.touches[0].clientY - startY > 10) {
-        return
-      }
-      if (this._n === 0 && moved > 0) {
-        moved = Math.pow(moved, 0.9)
-      }
-      if (this._n === this.len - 1 && moved < 0) {
-        moved = Math.pow(-moved, 0.9)
-        moved = -moved
-      }
-      this.listContainer.style.transform = 'translateX(' + (moved) + 'px)'
-      this.listContainer.style.webkitTransform = 'translateX(' + (moved) + 'px)'
-    }
-  })
-  // swipe end
-  Event.addEvent(this.contentElem, 'touchend', (event) => {
-    let endX = event.changedTouches[0].clientX
-    // 判断条件还需要重写
-    if (endX - startX > this.oneWidth / 5) {
-      if (this._n === 0) {
-        this.listContainer.style.transition = 'all .3s ease-in .1s'
-        this.listContainer.style.webkitTransition = 'all .3s ease-in .1s'
-        this.listContainer.style.transform = 'translateX(0)'
-        this.listContainer.style.webkitTransform = 'translateX(0)'
-        setTimeout(() => {
-          this.listContainer.style.transition = 'none'
-        }, 500)
-      } else {
-        this.listContainer.style.transform = 'translateX(0)'
-        this.listContainer.style.webkitTransform = 'translateX(0)'
-        this.listContainer.style.left = (parseFloat(this.listContainer.style.left) + endX - startX) + 'px'
-        this.play(-1)
-      }
-    } else if (startX - endX > this.oneWidth / 4) {
-      if (this._n === (this.len - 1)) {
-        this.listContainer.style.transition = 'all .3s ease-in .1s'
-        this.listContainer.style.webkitTransition = 'all .3s ease-in .1s'
-        this.listContainer.style.transform = 'translateX(0)'
-        this.listContainer.style.webkitTransform = 'translateX(0)'
-        setTimeout(() => {
-          this.listContainer.style.transition = 'none'
-          this.listContainer.style.webkitTransition = 'none'
-        }, 500)
-      } else {
-        this.listContainer.style.transform = 'translateX(0)'
-        this.listContainer.style.webkitTransform = 'translateX(0)'
-        this.listContainer.style.left = (parseFloat(this.listContainer.style.left) + endX - startX) + 'px'
-        this.play(1)
-      }
-    } else {
-      this.listContainer.style.transition = 'all .3s ease-in .1s'
-      this.listContainer.style.webkitTransition = 'all .3s ease-in .1s'
-      this.listContainer.style.transform = 'translateX(0)'
-      this.listContainer.style.webkitTransform = 'translateX(0)'
-      setTimeout(() => {
-        this.listContainer.style.transition = 'none'
-        this.listContainer.style.webkitTransition = 'none'
-      }, 500)
-    }
-    // 继续自动轮播
-    this.auto && this.autoPlay()
-  })
-}
-
 Lunbo.prototype.init = function () {
   this.setStyle()
-  this.touch && this.swiper()
   this.hasDot && this.createDots(this.contentElem)
   this.hasArrow && this.createArrows(this.contentElem)
   this.auto && this.autoPlay() && this.autoPause(this.contentElem) &&
