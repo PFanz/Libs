@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title></title>
+  <style type="text/css">
+    .lunbo-container,
+    li,
+    img {
+      height: 300px;
+      width: 540px;
+    }
+
+    .slide {
+      /*height: 30px;*/
+    }
+
+    ul {
+      margin: 0;
+    }
+
+    .slide_0 {
+      background: #333;
+    }
+
+    .slide_1 {
+      background: #666;
+    }
+
+    .slide_2 {
+      background: #999;
+    }
+
+    .slide_3 {
+      background: #ccc;
+    }
+
+    .dot {
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      background: #000;
+      border-radius: 50%;
+    }
+
+    .dot.active {
+      background: red;
+    }
+
+    span {
+      display: inline-block;
+      height: 50px;
+      width: 50px;
+      background: #bbb;
+    }
+  </style>
+</head>
+<body>
+  <div class="lunbo">
+    <div class="lunbo-container" id="lunbo">
+      <ul>
+        <li class="slide slide_0"><img src="http://a4.peoplecdn.cn/2dd660ee4ce459c8d30d01c263404940.jpg@1" alt=""></li>
+        <li class="slide slide_1"><img src="http://a1.peoplecdn.cn/2b9fbc7beea71ae8a25c1bdd58e5c1e7.jpg@1" alt=""></li>
+        <li class="slide slide_2"><img src="http://a1.peoplecdn.cn/b218826e84fa7e6d241aad0f81068e88.jpg@1" alt=""></li>
+        <li class="slide slide_3"><img src="http://a1.peoplecdn.cn/1650b0145f984415f35e80650b500770.jpg@1" alt=""></li>
+      </ul>
+    </div>
+    <div id="dot-container"></div>
+    <span id="btn-pre"></span>
+    <span id="btn-next"></span>
+  </div>
+
+  <script type="text/javascript" src="./dist/js/index.js"></script>
+</body>
+</html>
