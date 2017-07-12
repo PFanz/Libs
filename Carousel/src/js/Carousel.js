@@ -1,3 +1,31 @@
+if (typeof Array.prototype.forEach != "function") {
+  Array.prototype.forEach = function(fn, context) {
+    for (var k = 0, length = this.length; k < length; k++) {
+      if (typeof fn === "function" && Object.prototype.hasOwnProperty.call(this, k)) {
+        fn.call(context, this[k], k, this);
+      }
+    }
+  };
+}
+
+if (!document.getElementsByClassName) {
+  document.getElementsByClassName = function(className, element) {
+    var children = (element || document).getElementsByTagName('*');
+    var elements = new Array();
+    for (var i = 0; i < children.length; i++) {
+      var child = children[i];
+      var classNames = child.className.split(' ');
+      for (var j = 0; j < classNames.length; j++) {
+        if (classNames[j] == className) {
+          elements.push(child);
+          break;
+        }
+      }
+    }
+    return elements;
+  };
+}
+
 /**
  * String required id: 轮播图容器ID
  * String slidesConId: 包含所有项的容器ID 不设置时为轮播图容器下的ul标签
@@ -39,7 +67,8 @@ const Carousel = function (config) {
     return
   }
   // this.slides = $(this.slidesCon).find('.' + this.config.slideClass) || this.slidesCon.getElementsByTagName('li')
-  this.slides = this.slidesCon.getElementsByClassName(this.config.slideClass) || this.slidesCon.getElementsByTagName('li')
+  // this.slides = this.slidesCon.getElementsByClassName(this.config.slideClass) || this.slidesCon.getElementsByTagName('li')
+  this.slides = this.slidesCon.getElementsByTagName('li')
   if (!this.slides) {
     return
   }
@@ -47,9 +76,16 @@ const Carousel = function (config) {
   if (!this.len) {
     return
   }
-  this.distance = config.width ||
-                    window.getComputedStyle(this.slides[0]).width ||
-                    this.slides[0].currentStyle.width // 一页的距离
+  // this.distance = config.width ||
+  //   window.getComputedStyle(this.slides[0]).width ||
+  //   this.slides[0].currentStyle.width // 一页的距离
+  if (config.width) {
+    this.distance = config.width
+  } else if (window.getComputedStyle) {
+    this.distance = window.getComputedStyle(this.slides[0]).width
+  } else {
+    this.distance = this.slides[0].currentStyle.width // 一页的距离
+  }
   if (!this.distance) {
     return
   }
@@ -75,7 +111,7 @@ Carousel.prototype.init = function () {
   this.slidesCon.style.cssText = `position: relative; width: ${this.distance}px;`
 
   Array.prototype.forEach.call(this.slides, (item, index) => {
-  // $.each(this.slides, (item, index) => {
+    // $.each(this.slides, (item, index) => {
     item.style.cssText += `position: absolute; top: 0; width: ${this.distance}px;`
   })
 
@@ -89,8 +125,12 @@ Carousel.prototype.init = function () {
   } else {
     this.transformFlag = 'left'
   }
-
-  let borderRadius = window.getComputedStyle(this.carousel, null).borderRadius
+  let borderRadius
+  if (window.getComputedStyle) {
+    borderRadius = window.getComputedStyle(this.carousel, null).borderRadius
+  } else {
+    borderRadius = true
+  }
   if (borderRadius && borderRadius !== '0px') {
     this.transformFlag = 'left'
   }
@@ -113,9 +153,9 @@ Carousel.prototype.autoPlay = function () {
 
 Carousel.prototype.setPos = function (index) {
   this.carousel.style.display = 'none'
-  // 隐藏其他
+    // 隐藏其他
   Array.prototype.forEach.call(this.slides, (item, index) => {
-  // $.each(this.slides, (item, index) => {
+    // $.each(this.slides, (item, index) => {
     item.style.display = 'none'
   })
 
@@ -125,9 +165,12 @@ Carousel.prototype.setPos = function (index) {
 
   this.slidesCon.style[this.transformFlag] = ''
 
-  this.slides[index].style.cssText += `display: block; left: 0;`
-  this.slides[pre].style.cssText += `display: block; left: -${this.distance}px;`
-  this.slides[next].style.cssText += `display: block; left: ${this.distance}px;`
+  this.slides[index].style.display = 'block'
+  this.slides[index].style.left = 0
+  this.slides[pre].style.display = 'block'
+  this.slides[pre].style.left = `-${this.distance}px`
+  this.slides[next].style.display = 'block'
+  this.slides[next].style.left = `${this.distance}px`
 
   this.carousel.style.display = 'block'
 
@@ -152,9 +195,9 @@ Carousel.prototype.play = function (n) {
 
   var move = () => {
     if (n > 0) {
-      left -= this.distance / (this.config.speed / 60)   // 每次要移动的距离
+      left -= this.distance / (this.config.speed / 60) // 每次要移动的距离
     } else if (n < 0) {
-      left += this.distance / (this.config.speed / 60)   // 每次要移动的距离
+      left += this.distance / (this.config.speed / 60) // 每次要移动的距离
     }
     if (this.transformFlag === 'left') {
       this.slidesCon.style[this.transformFlag] = left + 'px'
@@ -220,21 +263,23 @@ Carousel.prototype.initDot = function () {
   this.dotCon.innerHTML += dotsStr
 
   // let dots = this.dotCon.getElementsByClassName(this.config.dotClass)
-  let dots = $(this.dotCon).find('.' + this.config.dotClass)
+  let dots = this.dotCon.getElementsByTagName('a')
+  // let dots = $(this.dotCon).find('.' + this.config.dotClass)
 
   Event.addEvent(this.dotCon, 'click', event => {
+    // console.log('click')
     event = event || window.event
     let target = Event.getTarget(event)
     if (target.className.indexOf(this.config.dotClass) >= 0 &&
-          target.className.indexOf('active') < 0) {
+      target.className.indexOf('active') < 0) {
       // 暂停播放
       this.config.auto && clearInterval(this.autoFlag)
 
       Array.prototype.forEach.call(this.dots, (item, index) => {
-      // $.each(this.dots, (item, index) => {
+        // $.each(this.dots, (item, index) => {
         if (item === target) {
           this.play(index - this.index)
-          // 开启自动播放
+            // 开启自动播放
           if (this.config.auto) {
             this.autoFlag = this.autoPlay()
           }
@@ -252,9 +297,9 @@ Carousel.prototype.setDot = function (n) {
   Array.prototype.forEach.call(this.dots, item => {
     item.className = item.className.replace(' active', '')
   })
-  // let className = this.dots[this.getIndex(this.index + n)].className
+    // let className = this.dots[this.getIndex(this.index + n)].className
   this.dots[this.getIndex(this.index + n)].className += ' active'
-  // this.dots.eq(this.getIndex(this.index + n)).addClass('active')
+    // this.dots.eq(this.getIndex(this.index + n)).addClass('active')
 }
 
 Carousel.prototype.initBtn = function () {
@@ -262,34 +307,36 @@ Carousel.prototype.initBtn = function () {
     let preBtn = document.getElementById(this.config.preBtnId)
     try {
       Event.addEvent(preBtn, 'click', () => {
+        // console.log('click')
         // 暂停自动播放
         this.config.auto && clearInterval(this.autoFlag)
         this.play(-1)
-        // 开启
+          // 开启
         if (this.config.auto) {
           this.autoFlag = this.autoPlay()
         }
       })
       preBtn.style.visibility = 'visible'
     } catch (err) {
-      console.error(err)
+      // console.error(err)
     }
   }
   if (this.config.nextBtnId) {
     let nextBtn = document.getElementById(this.config.nextBtnId)
     try {
       Event.addEvent(nextBtn, 'click', () => {
+        // console.log('click')
         // 暂停自动播放
         this.config.auto && clearInterval(this.autoFlag)
         this.play(1)
-        // 开启
+          // 开启
         if (this.config.auto) {
           this.autoFlag = this.autoPlay()
         }
       })
       nextBtn.style.visibility = 'visible'
     } catch (err) {
-      console.error(err)
+      // console.error(err)
     }
   }
 }
