@@ -6,7 +6,10 @@ const Event = {
       return domElem.attachEvent(event, func)
     }
     domElem['on' + event] = func
+  },
+  getTarget: (event) => {
+    return event.target || event.srcElement
   }
 }
 
-module.exports = Event
+export default Event

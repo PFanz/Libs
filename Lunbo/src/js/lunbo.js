@@ -89,24 +89,11 @@ Lunbo.prototype.createArrows = function (parentElem) {
 }
 
 Lunbo.prototype.setStyle = function () {
-  // 样式初始化
-  this.contentElem.style.position = 'relative'
-  this.contentElem.style.overflow = 'hidden'
-
-  // this.listContainer.style.padding = 0
   this.listContainer.style.width = this.len * this.oneWidth + 'px'
   this.listContainer.style.position = 'relative'
   this.listContainer.style.left = 0 + 'px'
 
   let listNodes = this.contentElem.querySelectorAll('li')
-  for (let i = 0, len = listNodes.length; i < len; i++) {
-    listNodes[i].style.listStyle = 'none'
-    listNodes[i].style.float = 'left'
-    listNodes[i].style.width = this.oneWidth + 'px'
-    // listNodes[i].style.height = this.oneHeight + 'px'
-    // listNodes[i].querySelector('img').style.width = '100%'
-    // listNodes[i].querySelector('img').style.height = '100%'
-  }
 }
 
 Lunbo.prototype.autoPlay = function () {
