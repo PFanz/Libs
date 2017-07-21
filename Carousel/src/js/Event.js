@@ -3,7 +3,7 @@ const Event = {
     if (document.addEventListener) {
       return domElem.addEventListener(event, func)
     } else if (document.attachEvent) {
-      return domElem.attachEvent(event, func)
+      return domElem.attachEvent('on' + event, func)
     }
     domElem['on' + event] = func
   },

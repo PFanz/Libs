@@ -1,29 +1,29 @@
-if (typeof Array.prototype.forEach != "function") {
-  Array.prototype.forEach = function(fn, context) {
+if (typeof Array.prototype.forEach !== 'function') {
+  Array.prototype.forEach = function (fn, context) {
     for (var k = 0, length = this.length; k < length; k++) {
-      if (typeof fn === "function" && Object.prototype.hasOwnProperty.call(this, k)) {
-        fn.call(context, this[k], k, this);
+      if (typeof fn === 'function' && Object.prototype.hasOwnProperty.call(this, k)) {
+        fn.call(context, this[k], k, this)
       }
     }
-  };
+  }
 }
 
 if (!document.getElementsByClassName) {
-  document.getElementsByClassName = function(className, element) {
-    var children = (element || document).getElementsByTagName('*');
-    var elements = new Array();
+  document.getElementsByClassName = function (className, element) {
+    var children = (element || document).getElementsByTagName('*')
+    var elements = new Array()
     for (var i = 0; i < children.length; i++) {
-      var child = children[i];
-      var classNames = child.className.split(' ');
+      var child = children[i]
+      var classNames = child.className.split(' ')
       for (var j = 0; j < classNames.length; j++) {
         if (classNames[j] == className) {
-          elements.push(child);
-          break;
+          elements.push(child)
+          break
         }
       }
     }
-    return elements;
-  };
+    return elements
+  }
 }
 
 /**
@@ -153,7 +153,7 @@ Carousel.prototype.autoPlay = function () {
 
 Carousel.prototype.setPos = function (index) {
   this.carousel.style.display = 'none'
-    // 隐藏其他
+  // 隐藏其他
   Array.prototype.forEach.call(this.slides, (item, index) => {
     // $.each(this.slides, (item, index) => {
     item.style.display = 'none'
@@ -279,11 +279,10 @@ Carousel.prototype.initDot = function () {
         // $.each(this.dots, (item, index) => {
         if (item === target) {
           this.play(index - this.index)
-            // 开启自动播放
+          // 开启自动播放
           if (this.config.auto) {
             this.autoFlag = this.autoPlay()
           }
-          return
         }
       })
     }
@@ -297,9 +296,9 @@ Carousel.prototype.setDot = function (n) {
   Array.prototype.forEach.call(this.dots, item => {
     item.className = item.className.replace(' active', '')
   })
-    // let className = this.dots[this.getIndex(this.index + n)].className
+  // let className = this.dots[this.getIndex(this.index + n)].className
   this.dots[this.getIndex(this.index + n)].className += ' active'
-    // this.dots.eq(this.getIndex(this.index + n)).addClass('active')
+  // this.dots.eq(this.getIndex(this.index + n)).addClass('active')
 }
 
 Carousel.prototype.initBtn = function () {
@@ -311,7 +310,7 @@ Carousel.prototype.initBtn = function () {
         // 暂停自动播放
         this.config.auto && clearInterval(this.autoFlag)
         this.play(-1)
-          // 开启
+        // 开启
         if (this.config.auto) {
           this.autoFlag = this.autoPlay()
         }
@@ -329,7 +328,7 @@ Carousel.prototype.initBtn = function () {
         // 暂停自动播放
         this.config.auto && clearInterval(this.autoFlag)
         this.play(1)
-          // 开启
+        // 开启
         if (this.config.auto) {
           this.autoFlag = this.autoPlay()
         }
