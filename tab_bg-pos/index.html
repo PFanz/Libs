@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+  <style>
+  .auto-tabs {
+    font-size: 0;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    width: 649px;
+    white-space: nowrap;
+    background: url('./images/tabs_bg.png') no-repeat;
+    background-position: -568px 0;
+    font-family: JLinXin;
+  }
+
+  .auto-tabs-item {
+    display: inline-block;
+    margin: 0 14px;
+    width: 85px;
+    line-height: 40px;
+    text-align: center;
+    font-size: 20px;
+    color: #3d3d3d;
+    cursor: pointer;
+  }
+
+  .auto-tabs-item:first-child {
+    margin-left: 0;
+  }
+
+  .auto-cont {
+    display: none;
+  }
+
+  .auto-cont.active {
+    display: block;
+  }
+  </style>
+  <script src="http://apps.bdimg.com/libs/zepto/1.1.4/zepto.min.js"></script>
+</head>
+<body>
+  <div class="intelligence-list-box">
+    <div class="auto-tabs-cont">
+      <ul class="auto-tabs">
+        <li class="auto-tabs-item active" data-for="auto-list-0">
+          最新消息
+        </li>
+        <li class="auto-tabs-item" data-for="auto-list-1">
+          人工智能
+        </li>
+        <li class="auto-tabs-item" data-for="auto-list-2">
+          VR/AR
+        </li>
+        <li class="auto-tabs-item" data-for="auto-list-3">
+          无人驾驶
+        </li>
+        <li class="auto-tabs-item" data-for="auto-list-4">
+          物联网
+        </li>
+        <li class="auto-tabs-item" data-for="auto-list-5">
+          智慧城市
+        </li>
+      </ul>
+    </div>
+    <ul class="auto-conts">
+      <li class="auto-cont active" id="auto-list-0">
+        a
+      </li>
+      <li class="auto-cont" id="auto-list-1">
+        b
+      </li>
+      <li class="auto-cont" id="auto-list-2">
+        c
+      </li>
+      <li class="auto-cont" id="auto-list-3">
+        d
+      </li>
+      <li class="auto-cont" id="auto-list-4">
+        d
+      </li>
+      <li class="auto-cont" id="auto-list-5">
+        e
+      </li>
+    </ul>
+  </div>
+
+  <script>
+  $('.auto-tabs').on('click', '.auto-tabs-item', function () {
+    var $this = $(this)
+    var id = $this.attr('data-for')
+    var $target = $('#' + id)
+    // switchClass($this, 'active')
+    $('.auto-tabs').css('background-position', -568 + $this.index() * 113 + 'px' + ' 0')
+    switchClass($target, 'active')
+  })
+
+  function switchClass ($elem, cname) {
+    if ($elem.hasClass(cname)) {
+      return
+    }
+    $elem.siblings().removeClass(cname)
+    $elem.addClass(cname)
+  }
+  </script>
+
+</body>
+</html>
